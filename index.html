@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Flowchart Navigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="background-animation"></div>
+
+    <main class="app-container">
+        <!-- View 1: User Page -->
+        <section id="view-user-page" class="view active">
+            <div class="glass-card">
+                <h1>Welcome</h1>
+                <p>Please select your user type to continue</p>
+                
+                <div class="button-group">
+                    <button class="primary-btn pulse-hover" onclick="navigateToLogin('Student')">
+                        <span class="icon">🎓</span> Student
+                    </button>
+                    <button class="primary-btn pulse-hover" onclick="navigateToLogin('Admin')">
+                        <span class="icon">🛡️</span> Admin
+                    </button>
+                    <button class="primary-btn pulse-hover" onclick="navigateToLogin('Alumni')">
+                        <span class="icon">🎓</span> Alumni
+                    </button>
+                    <button class="primary-btn pulse-hover" onclick="navigateToLogin('Faculty')">
+                        <span class="icon">🧑‍🏫</span> Faculty
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 2: Login Page -->
+        <section id="view-login-page" class="view hidden">
+            <div class="glass-card login-card">
+                <button class="back-btn" onclick="navigateTo('view-user-page')">← Back</button>
+                
+                <h1 id="login-title">Login</h1>
+                <p>Enter your credentials to access the portal</p>
+                
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" required placeholder="Enter username">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required placeholder="Enter password">
+                    </div>
+                    
+                    <button type="submit" class="submit-btn gradient-btn pulse-hover">Login</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- View 3: Dashboard Options -->
+        <section id="view-dashboard" class="view hidden">
+            <div class="glass-card dashboard-card">
+                <header class="dashboard-header">
+                    <div>
+                        <h1 id="dashboard-title">Dashboard</h1>
+                        <p>Where would you like to go?</p>
+                    </div>
+                    <button class="logout-btn" onclick="navigateTo('view-user-page')">Logout</button>
+                </header>
+                
+                <div class="dashboard-grid">
+                    <button class="dashboard-item fade-in" style="--delay: 0.1s" onclick="showDestination('Alumni Portal')">
+                        <h3>Alumni</h3>
+                        <p>Access alumni resources</p>
+                    </button>
+                    <button class="dashboard-item fade-in" style="--delay: 0.2s" onclick="showDestination('Student Page')">
+                        <h3>Student Page</h3>
+                        <p>Your academic overview</p>
+                    </button>
+                    <button class="dashboard-item fade-in" style="--delay: 0.3s" onclick="showDestination('On Campus Dashboard')">
+                        <h3>On Campus</h3>
+                        <p>Campus activities and events</p>
+                    </button>
+                    <button class="dashboard-item fade-in" style="--delay: 0.4s" onclick="showDestination('Networking Dashboard')">
+                        <h3>Networking</h3>
+                        <p>Connect with peers</p>
+                    </button>
+                    <button class="dashboard-item fade-in" style="--delay: 0.5s" onclick="showDestination('Admin Control Panel')">
+                        <h3>Admin</h3>
+                        <p>System administration</p>
+                    </button>
+                    <button class="dashboard-item fade-in" style="--delay: 0.6s" onclick="showDestination('Faculty Page')">
+                        <h3>Faculty</h3>
+                        <p>Faculty portal and staff network</p>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 4: Final Destination -->
+        <section id="view-destination" class="view hidden">
+            <div class="glass-card destination-card">
+                <button class="back-btn" onclick="navigateTo('view-dashboard')">← Back to Dashboard</button>
+                <div class="destination-content">
+                    <h1 id="destination-title">Destination</h1>
+                    <div class="loader"></div>
+                    <p>Loading module...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 5: Alumni Home Page -->
+        <section id="view-alumni-home" class="view hidden">
+            <div class="glass-card alumni-dashboard-card">
+                <button class="back-btn" onclick="navigateTo('view-dashboard')" style="position: relative; top: 0; left: 0; margin-bottom: 1rem;">← Back to Dashboard</button>
+                
+                <div class="alumni-layout">
+                    <!-- Sidebar -->
+                    <aside class="alumni-sidebar">
+                        <h2 class="sidebar-title">Alumni Portal</h2>
+                        <nav>
+                            <button class="sidebar-btn active" onclick="switchAlumniTab('profiles', this)">👩‍🎓 Networks</button>
+                            <button class="sidebar-btn" onclick="switchAlumniTab('analytics', this)">📊 General Analytics</button>
+                            <button class="sidebar-btn" onclick="switchAlumniTab('locations', this)">🌍 Job Locations</button>
+                            <button class="sidebar-btn" onclick="switchAlumniTab('connectivity', this)">🔗 Connectivity</button>
+                            <button class="sidebar-btn" onclick="switchAlumniTab('settings', this)">⚙️ Settings</button>
+                        </nav>
+                    </aside>
+
+                    <!-- Main Content Area -->
+                    <div class="alumni-main-content">
+                        <!-- Profiles Tab -->
+                        <div id="alumni-tab-profiles" class="alumni-tab-content active">
+                            <h3>Alumni Network</h3>
+                            <div class="alumni-grid">
+                                <!-- Mock Profile 1 -->
+                                <div class="alumni-card">
+                                    <img src="https://i.pravatar.cc/150?img=32" alt="Alice Doe">
+                                    <h4>Alice Doe</h4>
+                                    <p class="role">Software Engineer</p>
+                                    <p class="location">📍 Mountain View, CA</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                                <!-- Mock Profile 2 -->
+                                <div class="alumni-card">
+                                    <img src="https://i.pravatar.cc/150?img=11" alt="Bob Smith">
+                                    <h4>Bob Smith</h4>
+                                    <p class="role">Data Scientist</p>
+                                    <p class="location">📍 Seattle, WA</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                                <!-- Mock Profile 3 -->
+                                <div class="alumni-card">
+                                    <img src="https://i.pravatar.cc/150?img=5" alt="Charlie Davis">
+                                    <h4>Charlie Davis</h4>
+                                    <p class="role">Product Manager</p>
+                                    <p class="location">📍 New York, NY</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                                <!-- Mock Profile 4 -->
+                                <div class="alumni-card">
+                                    <img src="https://i.pravatar.cc/150?img=47" alt="Diana Prince">
+                                    <h4>Diana Prince</h4>
+                                    <p class="role">UX Designer</p>
+                                    <p class="location">📍 Austin, TX</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- General Analytics Tab -->
+                        <div id="alumni-tab-analytics" class="alumni-tab-content hidden" style="display: none;">
+                            <h3>General Analytics Dashboard</h3>
+                            <div class="charts-container">
+                                <div class="chart-wrapper">
+                                    <h4>Job Roles</h4>
+                                    <canvas id="chartRoles"></canvas>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <h4>Masters Pursuing</h4>
+                                    <canvas id="chartMasters"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Job Locations Tab -->
+                        <div id="alumni-tab-locations" class="alumni-tab-content hidden" style="display: none;">
+                            <h3>Job Locations Statistics</h3>
+                            <div class="charts-container">
+                                <div class="chart-wrapper">
+                                    <h4>Top US Cities</h4>
+                                    <canvas id="chartTopCities"></canvas>
+                                </div>
+                                <div class="chart-wrapper" style="max-height: 400px; display: flex; flex-direction: column; align-items: center;">
+                                    <h4>Domestic vs International Placements</h4>
+                                    <canvas id="chartInternational"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Connectivity Tab -->
+                        <div id="alumni-tab-connectivity" class="alumni-tab-content hidden" style="display: none;">
+                            <h3>Connectivity & Events</h3>
+                            <div class="connectivity-container">
+                                <div class="event-card">
+                                    <h4>Annual Tech Meetup 2026</h4>
+                                    <p class="date">📅 October 15th, 2026</p>
+                                    <p>Join us in San Francisco for tech networking.</p>
+                                    <button class="gradient-btn pulse-hover" style="margin-top: 1rem; padding: 0.5rem">RSVP</button>
+                                </div>
+                                <div class="event-card">
+                                    <h4>Virtual Mentoring</h4>
+                                    <p class="date">📅 November 2nd, 2026</p>
+                                    <p>Connect with senior alumni mentors.</p>
+                                    <button class="gradient-btn pulse-hover" style="margin-top: 1rem; padding: 0.5rem">Register</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Tab -->
+                        <div id="alumni-tab-settings" class="alumni-tab-content hidden" style="display: none;">
+                            <h3>Profile Settings</h3>
+                            <form onsubmit="event.preventDefault(); alert('Settings Saved!');" style="max-width:300px; margin: 0 auto; text-align: left;">
+                                <div class="input-group">
+                                    <label>Display Name</label>
+                                    <input type="text" value="Alumni User" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Current Role</label>
+                                    <input type="text" placeholder="e.g. Developer" required>
+                                </div>
+                                <button type="submit" class="gradient-btn pulse-hover">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 6: Student Home Page -->
+        <section id="view-student-home" class="view hidden">
+            <div class="glass-card student-dashboard-card">
+                <button class="back-btn" onclick="navigateTo('view-dashboard')" style="position: relative; top: 0; left: 0; margin-bottom: 1rem;">← Back to Dashboard</button>
+                
+                <div class="student-layout">
+                    <!-- Sidebar -->
+                    <aside class="student-sidebar">
+                        <h2 class="sidebar-title">Student Portal</h2>
+                        <nav>
+                            <button class="sidebar-btn active" onclick="switchStudentTab('profiles', this)">🧑‍🎓 Profiles</button>
+                            <button class="sidebar-btn" onclick="switchStudentTab('interests', this)">📈 Course Interests</button>
+                            <button class="sidebar-btn" onclick="switchStudentTab('activities', this)">✅ Enrolled Activities</button>
+                            <button class="sidebar-btn" onclick="switchStudentTab('connectivity', this)">🔗 Connectivity</button>
+                            <button class="sidebar-btn" onclick="switchStudentTab('settings', this)">⚙️ Settings</button>
+                        </nav>
+                    </aside>
+
+                    <!-- Main Content Area -->
+                    <div class="student-main-content">
+                        <!-- Profiles Tab -->
+                        <div id="student-tab-profiles" class="student-tab-content active">
+                            <h3>Student Profiles</h3>
+                            <div class="student-grid">
+                                <!-- Mock Profile 1 -->
+                                <div class="student-card">
+                                    <img src="https://i.pravatar.cc/150?img=1" alt="Emma W.">
+                                    <h4>Emma W.</h4>
+                                    <p class="role">Computer Science, Junior</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                                <!-- Mock Profile 2 -->
+                                <div class="student-card">
+                                    <img src="https://i.pravatar.cc/150?img=12" alt="Liam T.">
+                                    <h4>Liam T.</h4>
+                                    <p class="role">Business Admin, Senior</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                                <!-- Mock Profile 3 -->
+                                <div class="student-card">
+                                    <img src="https://i.pravatar.cc/150?img=59" alt="Olivia K.">
+                                    <h4>Olivia K.</h4>
+                                    <p class="role">Design, Sophomore</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                                <!-- Mock Profile 4 -->
+                                <div class="student-card">
+                                    <img src="https://i.pravatar.cc/150?img=60" alt="Noah R.">
+                                    <h4>Noah R.</h4>
+                                    <p class="role">Engineering, Freshman</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Course Interests Tab -->
+                        <div id="student-tab-interests" class="student-tab-content hidden" style="display: none;">
+                            <h3>Course Interests Dashboard</h3>
+                            <div class="charts-container">
+                                <div class="chart-wrapper">
+                                    <h4>Popular Course Enrolments</h4>
+                                    <canvas id="chartCourses"></canvas>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <h4>Study Groups Seeking Members</h4>
+                                    <canvas id="chartStudyGroups"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Enrolled Activities Tab -->
+                        <div id="student-tab-activities" class="student-tab-content hidden" style="display: none;">
+                            <h3>Your Enrolled Activities</h3>
+                            <div class="connectivity-container">
+                                <div class="event-card">
+                                    <h4>Robotics Team</h4>
+                                    <p class="date">📅 Meets Tuesdays 6PM</p>
+                                    <p>Working on the autonomous drone project.</p>
+                                    <button class="gradient-btn pulse-hover" style="margin-top: 1rem; padding: 0.5rem; opacity: 0.8;">View Updates</button>
+                                </div>
+                                <div class="event-card">
+                                    <h4>Debate Society</h4>
+                                    <p class="date">📅 Meets Thursdays 5PM</p>
+                                    <p>Preparing for the regional tournament.</p>
+                                    <button class="gradient-btn pulse-hover" style="margin-top: 1rem; padding: 0.5rem; opacity: 0.8;">View Updates</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Connectivity Tab -->
+                        <div id="student-tab-connectivity" class="student-tab-content hidden" style="display: none;">
+                            <h3>Connectivity</h3>
+                            <div class="connectivity-container">
+                                <div class="event-card">
+                                    <h4>Peer Tutoring Network</h4>
+                                    <p>Find students who can help you with your major.</p>
+                                    <button class="gradient-btn pulse-hover" style="margin-top: 1rem; padding: 0.5rem">Find a Tutor</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Tab -->
+                        <div id="student-tab-settings" class="student-tab-content hidden" style="display: none;">
+                            <h3>Profile Settings</h3>
+                            <form onsubmit="event.preventDefault(); alert('Student Settings Saved!');" style="max-width:300px; margin: 0 auto; text-align: left;">
+                                <div class="input-group">
+                                    <label>Full Name</label>
+                                    <input type="text" value="Student User" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Major</label>
+                                    <input type="text" placeholder="e.g. Computer Science" required>
+                                </div>
+                                <button type="submit" class="gradient-btn pulse-hover">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 7: On Campus Home Page -->
+        <section id="view-oncampus-home" class="view hidden">
+            <div class="glass-card oncampus-dashboard-card" style="max-width: 900px; padding: 2.5rem; width: 95vw; max-height: 85vh; overflow-y: auto;">
+                <button class="back-btn" onclick="navigateTo('view-dashboard')" style="position: relative; top: 0; left: 0; margin-bottom: 2rem;">← Back to Dashboard</button>
+                
+                <h2 style="text-align: left; margin-bottom: 2.5rem; font-size: 2.2rem; color: var(--text-primary);">On-Campus Activities</h2>
+
+                <div style="text-align: left; margin-bottom: 3.5rem;">
+                    <h3 style="margin-bottom: 1.5rem; font-size: 1.4rem; color: var(--primary-color);">📅 Upcoming Events</h3>
+                    <div class="alumni-grid">
+                        <!-- Mock Event 1 -->
+                        <div class="alumni-card" style="text-align: left; padding: 1.5rem;">
+                            <h4 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.2rem;">Spring Music Festival</h4>
+                            <p class="location" style="color: var(--primary-hover); margin-bottom: 0.5rem; font-weight: 500;">📍 Campus Quad - Friday, 5:00 PM</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Join us for an evening of live music, food trucks, and games.</p>
+                            <button class="gradient-btn pulse-hover" style="padding: 0.5rem; font-size: 0.9rem;">Enroll Now</button>
+                        </div>
+                        <!-- Mock Event 2 -->
+                        <div class="alumni-card" style="text-align: left; padding: 1.5rem;">
+                            <h4 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.2rem;">Tech Career Fair</h4>
+                            <p class="location" style="color: var(--primary-hover); margin-bottom: 0.5rem; font-weight: 500;">📍 Student Center - Next Tuesday, 10:00 AM</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Meet with top tech companies offering internships and full-time roles.</p>
+                            <button class="gradient-btn pulse-hover" style="padding: 0.5rem; font-size: 0.9rem;">Enroll Now</button>
+                        </div>
+                        <!-- Mock Event 3 -->
+                        <div class="alumni-card" style="text-align: left; padding: 1.5rem;">
+                            <h4 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.2rem;">Guest Lecture: AI Ethics</h4>
+                            <p class="location" style="color: var(--primary-hover); margin-bottom: 0.5rem; font-weight: 500;">📍 Auditorium A - Next Friday, 2:00 PM</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">A deep dive into the ethical implications of artificial intelligence.</p>
+                            <button class="gradient-btn pulse-hover" style="padding: 0.5rem; font-size: 0.9rem;">Enroll Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: left;">
+                    <h3 style="margin-bottom: 1.5rem; font-size: 1.4rem; color: #10b981;">✅ Enrolled Events</h3>
+                    <div class="alumni-grid">
+                        <!-- Enrolled Event 1 -->
+                        <div class="alumni-card" style="text-align: left; padding: 1.5rem; border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.03);">
+                            <h4 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.2rem;">Robotics Workshop</h4>
+                            <p class="location" style="color: #10b981; margin-bottom: 0.5rem; font-weight: 500;">📍 Engineering Lab - Tomorrow, 3:00 PM</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Hands-on workshop building Arduino-controlled rovers.</p>
+                            <button class="connect-btn pulse-hover" style="border-color: #10b981; color: #10b981;">View Ticket</button>
+                        </div>
+                        <!-- Enrolled Event 2 -->
+                        <div class="alumni-card" style="text-align: left; padding: 1.5rem; border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.03);">
+                            <h4 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.2rem;">Intramural Basketball</h4>
+                            <p class="location" style="color: #10b981; margin-bottom: 0.5rem; font-weight: 500;">📍 Main Gym - Saturday, 11:00 AM</p>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Quarter-finals match against the Engineering squad.</p>
+                            <button class="connect-btn pulse-hover" style="border-color: #10b981; color: #10b981;">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 8: Faculty Home Page -->
+        <section id="view-faculty-home" class="view hidden">
+            <div class="glass-card student-dashboard-card">
+                <button class="back-btn" onclick="navigateTo('view-dashboard')" style="position: relative; top: 0; left: 0; margin-bottom: 1rem;">← Back to Dashboard</button>
+                
+                <div class="student-layout">
+                    <!-- Sidebar -->
+                    <aside class="student-sidebar">
+                        <h2 class="sidebar-title">Faculty Portal</h2>
+                        <nav>
+                            <button class="sidebar-btn active" onclick="switchFacultyTab('profiles', this)">🧑‍🏫 Profiles</button>
+                            <button class="sidebar-btn" onclick="switchFacultyTab('analytics', this)">📊 Analytics</button>
+                            <button class="sidebar-btn" onclick="switchFacultyTab('connectivity', this)">🔗 Connectivity</button>
+                            <button class="sidebar-btn" onclick="switchFacultyTab('settings', this)">⚙️ Settings</button>
+                        </nav>
+                    </aside>
+
+                    <!-- Main Content Area -->
+                    <div class="student-main-content">
+                        <!-- Profiles Tab -->
+                        <div id="faculty-tab-profiles" class="student-tab-content active">
+                            <h3>Teaching Staff</h3>
+                            <div class="student-grid">
+                                <!-- Mock Profile 1 -->
+                                <div class="student-card">
+                                    <img src="https://i.pravatar.cc/150?img=11" alt="Dr. John S.">
+                                    <h4>Dr. John S.</h4>
+                                    <p class="role">Professor, Computer Science</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                                <!-- Mock Profile 2 -->
+                                <div class="student-card">
+                                    <img src="https://i.pravatar.cc/150?img=43" alt="Dr. Emily R.">
+                                    <h4>Dr. Emily R.</h4>
+                                    <p class="role">Associate Prof, Biology</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                                <!-- Mock Profile 3 -->
+                                <div class="student-card">
+                                    <img src="https://i.pravatar.cc/150?img=68" alt="Prof. Alan M.">
+                                    <h4>Prof. Alan M.</h4>
+                                    <p class="role">Lecturer, Mathematics</p>
+                                    <button class="connect-btn pulse-hover">Connect</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analytics Tab -->
+                        <div id="faculty-tab-analytics" class="student-tab-content hidden" style="display: none;">
+                            <h3>Faculty Analytics Dashboard</h3>
+                            <div class="charts-container">
+                                <div class="chart-wrapper">
+                                    <h4>Masters Pursuing On Campus (By Program)</h4>
+                                    <canvas id="chartFacultyMasters"></canvas>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <h4>Working Professors by Department</h4>
+                                    <canvas id="chartWorkingProfessors"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Connectivity Tab -->
+                        <div id="faculty-tab-connectivity" class="student-tab-content hidden" style="display: none;">
+                            <h3>Faculty Connectivity</h3>
+                            <div class="connectivity-container">
+                                <div class="event-card">
+                                    <h4>Annual Teaching Symposium</h4>
+                                    <p class="date">📅 Next Month - Faculty Club</p>
+                                    <p>Collaborative event for sharing teaching methodology.</p>
+                                    <button class="gradient-btn pulse-hover" style="margin-top: 1rem; padding: 0.5rem">Register</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Tab -->
+                        <div id="faculty-tab-settings" class="student-tab-content hidden" style="display: none;">
+                            <h3>Profile Settings</h3>
+                            <form onsubmit="event.preventDefault(); alert('Faculty Settings Saved!');" style="max-width:300px; margin: 0 auto; text-align: left;">
+                                <div class="input-group">
+                                    <label>Full Name & Title</label>
+                                    <input type="text" value="Dr. Faculty User" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Department</label>
+                                    <input type="text" placeholder="e.g. Physics" required>
+                                </div>
+                                <button type="submit" class="gradient-btn pulse-hover">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 9: Admin Home Page -->
+        <section id="view-admin-home" class="view hidden">
+            <div class="glass-card student-dashboard-card">
+                <button class="back-btn" onclick="navigateTo('view-dashboard')" style="position: relative; top: 0; left: 0; margin-bottom: 1rem;">← Back to Dashboard</button>
+                
+                <div class="student-layout">
+                    <!-- Sidebar -->
+                    <aside class="student-sidebar">
+                        <h2 class="sidebar-title">Admin Portal</h2>
+                        <nav>
+                            <button class="sidebar-btn active" onclick="switchAdminTab('events', this)">📋 Event Administration</button>
+                            <button class="sidebar-btn" onclick="switchAdminTab('alumni-stats', this)">📊 Alumni Statistics</button>
+                            <button class="sidebar-btn" onclick="switchAdminTab('student-stats', this)">📊 Student Statistics</button>
+                            <button class="sidebar-btn" onclick="switchAdminTab('update', this)">⚙️ Update Events</button>
+                        </nav>
+                    </aside>
+
+                    <!-- Main Content Area -->
+                    <div class="student-main-content">
+                        <!-- Events Tab -->
+                        <div id="admin-tab-events" class="student-tab-content active">
+                            <h3>All Event Grids</h3>
+                            <div class="student-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+                                <!-- Mock Event Admin 1 -->
+                                <div class="student-card" style="text-align: left; padding: 1.5rem;">
+                                    <h4 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.2rem;">Spring Music Festival</h4>
+                                    <p class="location" style="color: var(--primary-color); margin-bottom: 1rem;">📅 Friday, 5:00 PM</p>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; margin-bottom: 1rem;">
+                                        <p style="margin: 0; font-size: 0.9rem;"><strong>Students Participating:</strong> 245</p>
+                                        <p style="margin: 0; font-size: 0.9rem;"><strong>Coordinators (2):</strong></p>
+                                        <ul style="margin: 5px 0 0 15px; font-size: 0.8rem; color: var(--text-secondary);">
+                                            <li>Alice W. (alice@univ.edu)</li>
+                                            <li>Mark T. (mark@univ.edu)</li>
+                                        </ul>
+                                    </div>
+                                    <button class="gradient-btn pulse-hover" style="padding: 0.5rem; font-size: 0.9rem;">Edit Event</button>
+                                </div>
+                                <!-- Mock Event Admin 2 -->
+                                <div class="student-card" style="text-align: left; padding: 1.5rem;">
+                                    <h4 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.2rem;">Tech Career Fair</h4>
+                                    <p class="location" style="color: var(--primary-color); margin-bottom: 1rem;">📅 Next Tuesday, 10:00 AM</p>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; margin-bottom: 1rem;">
+                                        <p style="margin: 0; font-size: 0.9rem;"><strong>Students Participating:</strong> 512</p>
+                                        <p style="margin: 0; font-size: 0.9rem;"><strong>Coordinators (3):</strong></p>
+                                        <ul style="margin: 5px 0 0 15px; font-size: 0.8rem; color: var(--text-secondary);">
+                                            <li>John D. (john@univ.edu)</li>
+                                            <li>Sarah L. (sarah@univ.edu)</li>
+                                            <li>Pete G. (pete@univ.edu)</li>
+                                        </ul>
+                                    </div>
+                                    <button class="gradient-btn pulse-hover" style="padding: 0.5rem; font-size: 0.9rem;">Edit Event</button>
+                                </div>
+                                <!-- Mock Event Admin 3 -->
+                                <div class="student-card" style="text-align: left; padding: 1.5rem;">
+                                    <h4 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.2rem;">Robotics Workshop</h4>
+                                    <p class="location" style="color: var(--primary-color); margin-bottom: 1rem;">📅 Tomorrow, 3:00 PM</p>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; margin-bottom: 1rem;">
+                                        <p style="margin: 0; font-size: 0.9rem;"><strong>Students Participating:</strong> 45</p>
+                                        <p style="margin: 0; font-size: 0.9rem;"><strong>Coordinators (1):</strong></p>
+                                        <ul style="margin: 5px 0 0 15px; font-size: 0.8rem; color: var(--text-secondary);">
+                                            <li>Dr. Emil C. (emil@univ.edu)</li>
+                                        </ul>
+                                    </div>
+                                    <button class="gradient-btn pulse-hover" style="padding: 0.5rem; font-size: 0.9rem;">Edit Event</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alumni Stats Tab -->
+                        <div id="admin-tab-alumni-stats" class="student-tab-content hidden" style="display: none;">
+                            <h3>Alumni Event Attendance Dashboard</h3>
+                            <div class="charts-container" style="display: block;">
+                                <div class="chart-wrapper" style="max-width: 800px; margin: 0 auto;">
+                                    <h4>Alumni Registrations for Upcoming Events</h4>
+                                    <canvas id="chartAdminAlumni"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Student Stats Tab -->
+                        <div id="admin-tab-student-stats" class="student-tab-content hidden" style="display: none;">
+                            <h3>Student Event Participation Dashboard</h3>
+                            <div class="charts-container" style="display: block;">
+                                <div class="chart-wrapper" style="max-width: 800px; margin: 0 auto;">
+                                    <h4>Student Registrations for Upcoming Events</h4>
+                                    <canvas id="chartAdminStudents"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Update Events Tab -->
+                        <div id="admin-tab-update" class="student-tab-content hidden" style="display: none;">
+                            <h3>Event Updating & Scheduling</h3>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                                <!-- Add Event Section -->
+                                <div class="glass-card" style="padding: 1.5rem; text-align: left; background: rgba(255,255,255,0.03);">
+                                    <h4 style="margin-bottom: 1rem; color: #10b981; font-size: 1.2rem;">➕ Add Event</h4>
+                                    <form onsubmit="event.preventDefault(); alert('Event Added Successfully!');">
+                                        <div class="input-group">
+                                            <label>Event Title</label>
+                                            <input type="text" placeholder="e.g. Winter Gala" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Location</label>
+                                            <input type="text" placeholder="e.g. Campus Quad" required>
+                                        </div>
+                                        <div class="input-group">
+                                            <label>Date & Time</label>
+                                            <input type="datetime-local" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white; font-family: inherit; margin-bottom: 1rem;" required>
+                                        </div>
+                                        <button type="submit" class="gradient-btn pulse-hover" style="width: 100%; border-radius: 6px;">Create New Event</button>
+                                    </form>
+                                </div>
+
+                                <!-- Cancel Event Section -->
+                                <div class="glass-card" style="padding: 1.5rem; text-align: left; background: rgba(255,255,255,0.03);">
+                                    <h4 style="margin-bottom: 1rem; color: #f43f5e; font-size: 1.2rem;">❌ Cancel Event</h4>
+                                    <form onsubmit="event.preventDefault(); alert('Event Cancelled!');">
+                                        <div style="margin-bottom: 1.2rem;">
+                                            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Select Event to Cancel</label>
+                                            <select required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white; font-family: inherit; cursor: pointer;">
+                                                <option value="" disabled selected>Select from active events...</option>
+                                                <option value="1" style="color: black;">Spring Music Festival</option>
+                                                <option value="2" style="color: black;">Tech Career Fair</option>
+                                                <option value="3" style="color: black;">Robotics Workshop</option>
+                                            </select>
+                                        </div>
+                                        <div style="margin-bottom: 1.2rem;">
+                                            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Cancellation Reason</label>
+                                            <textarea placeholder="e.g. Weather, Scheduling conflict..." required style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white; min-height: 80px; resize: vertical; font-family: inherit;"></textarea>
+                                        </div>
+                                        <button type="submit" class="gradient-btn pulse-hover" style="width: 100%; background: #e11d48; background-image: none; border-radius: 6px;">Cancel Selected Event</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
